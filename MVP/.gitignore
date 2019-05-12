@@ -1,3 +1,5 @@
+data/letters/
+data/letters.txt
 data/words/
 data/words.txt
 src/__pycache__/
