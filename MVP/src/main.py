@@ -75,7 +75,7 @@ def train(model, loader, currTime):
 		ax.set_yticklabels(['{:,.1%}'.format(x) for x in vals])
 		plt.tight_layout()
 
-		fig.savefig('charerror.png')
+		fig.savefig('../model/charerror.png')
 
 		fig, ax = plt.subplots(1, 1)
 		ax.plot(word_accuracy_hist)
@@ -87,9 +87,8 @@ def train(model, loader, currTime):
 		vals = ax.get_yticks()
 		ax.set_yticklabels(['{:,.1%}'.format(x) for x in vals])
 		plt.tight_layout()
-		plt.show()
 
-		fig.savefig('wordaccuracy.png')
+		fig.savefig('../model/wordaccuracy.png')
 
 		# stop training if no more improvement in the last x epochs
 		if noImprovementSince >= earlyStopping:
