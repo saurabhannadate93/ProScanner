@@ -2,6 +2,7 @@ data/letters/
 data/letters.txt
 data/words/
 data/words.txt
+data/Handwritten_data/
 src/__pycache__/
 model/checkpoint
 model/snapshot-*
