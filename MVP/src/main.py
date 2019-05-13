@@ -9,7 +9,7 @@ from DataLoader import DataLoader, Batch
 from Model import Model, DecoderType
 from SamplePreprocessor import preprocess
 import matplotlib.pyplot as plt
-
+import datetime
 
 class FilePaths:
 	"filenames and paths to data"
@@ -20,13 +20,13 @@ class FilePaths:
 	fnCorpus = '../data/corpus.txt'
 
 
-def train(model, loader):
+def train(model, loader, currTime):
 	"train NN"
 	epoch = 0 # number of training epochs since start
 	bestCharErrorRate = float('inf') # best valdiation character error rate
 	noImprovementSince = 0 # number of epochs no improvement of character error rate occured
 	earlyStopping = 5 # stop training after this number of epochs without improvement
-	max_epochs = 5
+	max_epochs = 20
 	char_error_hist=[]
 	word_accuracy_hist=[]
 	while True:
@@ -61,11 +61,34 @@ def train(model, loader):
 		else:
 			print('Character error rate not improved')
 			noImprovementSince += 1
-		plt.plot(char_error_hist)
-		plt.savefig('../model/charerror.png')
 
-		plt.plot(word_accuracy_hist)
-		plt.savefig('../model/wordaccuracy.png')
+		print('Time elapsed: ', datetime.datetime.now() - currTime)
+
+		fig, ax = plt.subplots(1, 1)
+		ax.plot(char_error_hist)
+
+		ax.set_title('Character Error Rate vs Epochs', fontdict=dict(size=10))
+		ax.set_ylabel('Percentage Error rate')
+		ax.set_xlabel('Epochs')
+		ax.set_ylim(0, 1)
+		vals = ax.get_yticks()
+		ax.set_yticklabels(['{:,.1%}'.format(x) for x in vals])
+		plt.tight_layout()
+
+		fig.savefig('../model/charerror.png')
+
+		fig, ax = plt.subplots(1, 1)
+		ax.plot(word_accuracy_hist)
+
+		ax.set_title('Word Error Rate vs Epochs', fontdict=dict(size=10))
+		ax.set_ylabel('Percentage Error rate')
+		ax.set_xlabel('Epochs')
+		ax.set_ylim(0, 1)
+		vals = ax.get_yticks()
+		ax.set_yticklabels(['{:,.1%}'.format(x) for x in vals])
+		plt.tight_layout()
+
+		fig.savefig('../model/wordaccuracy.png')
 
 		# stop training if no more improvement in the last x epochs
 		if noImprovementSince >= earlyStopping:
@@ -122,6 +145,8 @@ def main():
 	parser.add_argument('--wordbeamsearch', help='use word beam search instead of best path decoding', action='store_true')
 	args = parser.parse_args()
 
+	currTime = datetime.datetime.now()
+
 	decoderType = DecoderType.BestPath
 	if args.beamsearch:
 		decoderType = DecoderType.BeamSearch
@@ -142,7 +167,7 @@ def main():
 		# execute training or validation
 		if args.train:
 			model = Model(loader.charList, decoderType)
-			train(model, loader)
+			train(model, loader, currTime)
 		elif args.validate:
 			model = Model(loader.charList, decoderType, mustRestore=True)
 			validate(model, loader)
